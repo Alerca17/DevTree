@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import axios, { isAxiosError } from "axios";
 import type { RegisterForm } from "../types";
 import ErrorMessage from "../Components/ErrorMessage";
+import { toast } from "sonner";
 export default function RegisterView() {
   const initialValues: RegisterForm = {
     name: "",
@@ -15,6 +16,8 @@ export default function RegisterView() {
   const {
     register,
     watch,
+    reset,
+
     handleSubmit,
     formState: { errors },
   } = useForm({ defaultValues: initialValues });
@@ -23,13 +26,14 @@ export default function RegisterView() {
   const handleRegister = async (formData: RegisterForm) => {
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/auth/register",
+        `${import.meta.env.VITE_API_URL}/auth/register`,
         formData,
       );
-      console.log(data);
+      toast.success(data);
+      reset();
     } catch (error) {
       if (isAxiosError(error) && error.response) {
-        console.log(error.response.data);
+        toast.error(error.response.data);
       }
     }
   };
