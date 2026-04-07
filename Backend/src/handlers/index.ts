@@ -1,8 +1,10 @@
 import User from "../models/User"
 import { validationResult } from "express-validator"
 import slug from "slug"
+
 import { Request, Response } from "express"
 import { checkPassword, hashPassword } from "../utils/auth"
+import { generateJWT } from "../utils/jwt"
 
 export const createAccount = async (req: Request, res: Response) => {
 
@@ -52,5 +54,12 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).send('Contraseña incorrecta')
     }
 
-    res.status(200).send('Login exitoso')
+    const token = generateJWT({ id: user._id })
+
+    res.send(token)
+}
+
+export const getUser = async (req: Request, res: Response) => {
+
+    res.json(req.user)
 }
