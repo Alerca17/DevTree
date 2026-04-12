@@ -1,39 +1,54 @@
 # DevTree
 
-DevTree es una aplicación web tipo **Linktree** construida con **React + Vite** en el frontend y **Express + TypeScript + MongoDB** en el backend.
+DevTree es una aplicacion web tipo Linktree creada con React + Vite en el frontend y Express + TypeScript + MongoDB en el backend.
 
-La idea principal es que cada usuario tenga un perfil público sencillo, ordenado y fácil de compartir, donde pueda reunir sus enlaces más importantes en una sola página. En lugar de mandar a las personas a varias redes o sitios distintos, DevTree concentra todo en un único enlace con una interfaz limpia y pensada para que el acceso a la información sea rápido.
+La meta del proyecto es que cada usuario pueda gestionar su perfil y centralizar sus enlaces en una sola pagina publica. En este momento ya existe autenticacion funcional, acceso protegido al panel interno y una base lista para continuar con la gestion de links.
 
-El proyecto mezcla dos partes claras: una capa pública orientada a mostrar enlaces y una capa de autenticación que permite crear y gestionar usuarios. Esto lo convierte en una base útil para un clon funcional de Linktree, con margen para crecer hacia perfiles personalizados, administración de links y personalización visual.
+## Estado actual
 
-El proyecto actualmente incluye:
+Actualmente el proyecto ya permite:
 
-- Pantalla de inicio de sesión.
-- Pantalla de registro de usuarios.
-- Validación de formularios en frontend y backend.
-- Conexión a MongoDB.
-- Manejo de errores y notificaciones.
+- Registro de usuarios.
+- Login con generacion de token JWT.
+- Persistencia del token en localStorage.
+- Envio automatico del token en peticiones al backend mediante interceptor de Axios.
+- Validacion de rutas protegidas desde el frontend usando React Query.
+- Ruta protegida en backend para obtener usuario autenticado.
+- Base de panel admin con navegacion por pestañas (Links y Mi Perfil).
 
-## Tecnologías
+Tambien hay modulos en construccion:
 
-- Frontend: React, Vite, React Router, React Hook Form, Axios, Tailwind CSS, Sonner.
-- Backend: Node.js, Express, TypeScript, Mongoose, Express Validator, bcrypt, cors, dotenv.
+- Vista de links del usuario (LinkTreeView) como placeholder.
+- Formulario de perfil con campos base (handle, descripcion, imagen) sin persistencia final todavia.
+- Boton de cerrar sesion aun sin logica implementada.
 
-## Descripción General
+## Stack tecnologico
 
-DevTree está pensado para resolver un caso de uso muy concreto: centralizar enlaces personales o profesionales en una sola página de destino. Esa página puede representar a una persona, un creador de contenido, una marca o un proyecto, y sirve como punto de entrada hacia redes sociales, portafolios, repositorios, formularios de contacto o cualquier recurso relevante.
+### Frontend
 
-En términos de experiencia, el objetivo es que el usuario pueda registrarse, ingresar a su cuenta y luego administrar su presencia pública desde una interfaz simple. El diseño prioriza la claridad: menos navegación, más foco en los enlaces importantes y una estructura fácil de usar desde desktop o móvil.
+- React 19
+- Vite
+- React Router
+- React Hook Form
+- TanStack React Query + React Query Devtools
+- Axios
+- Tailwind CSS
+- Heroicons
+- Sonner
 
-## Cómo Funciona
+### Backend
 
-1. El usuario entra al frontend y accede a las pantallas de login o registro.
-2. El formulario envía los datos al backend, donde se validan los campos y se almacenan en MongoDB.
-3. El backend responde con mensajes de éxito o error según corresponda.
-4. El frontend muestra alertas y mensajes visuales para guiar al usuario.
-5. La configuración de `VITE_API_URL`, `PORT` y `FRONTEND_URL` mantiene la comunicación entre ambos proyectos.
+- Node.js
+- Express
+- TypeScript
+- Mongoose
+- Express Validator
+- bcrypt
+- jsonwebtoken
+- cors
+- dotenv
 
-## Estructura
+## Estructura del proyecto
 
 ```text
 DevTree/
@@ -47,6 +62,7 @@ DevTree/
 │   └── package.json
 └── Frontend/
     ├── src/
+    │   ├── api/
     │   ├── Components/
     │   ├── config/
     │   ├── layouts/
@@ -55,34 +71,79 @@ DevTree/
     └── package.json
 ```
 
-## Requisitos
+## Flujo actual de autenticacion
 
-- Node.js instalado.
-- Una base de datos MongoDB disponible localmente o en Atlas.
+1. El usuario se registra en /auth/register.
+2. El usuario inicia sesion en /auth/login.
+3. El backend responde con un JWT.
+4. El frontend guarda el token en localStorage como AUTH_TOKEN.
+5. Axios adjunta Authorization: Bearer <token> en cada request.
+6. React Query consulta /user para validar sesion y cargar datos del usuario.
+7. Si falla la autenticacion, el usuario se redirige a /auth/login.
+
+## Rutas del frontend
+
+- /auth/login
+- /auth/register
+- /admin (panel principal)
+- /admin/profile
+
+## Endpoints del backend
+
+### POST /auth/register
+
+Registra un nuevo usuario.
+
+Campos esperados:
+
+- name
+- email
+- handle
+- password
+
+Nota: password_confirmation se valida en frontend antes de enviar.
+
+### POST /auth/login
+
+Autentica al usuario y devuelve un JWT.
+
+Campos esperados:
+
+- email
+- password
+
+### GET /user
+
+Devuelve el usuario autenticado (sin password).
+
+Requiere header:
+
+- Authorization: Bearer <token>
 
 ## Variables de entorno
 
 ### Backend
 
-Copiar `Backend/.env.example` a `Backend/.env` y ajustar los valores:
+Copiar Backend/.env.example a Backend/.env y definir:
 
 ```env
 PORT=4000
 MONGO_URI=mongodb://localhost:27017/devtree
 FRONTEND_URL=http://localhost:5173
+JWT_SECRET=tu_clave_super_secreta
 ```
+
+Importante: JWT_SECRET es obligatorio para firmar y validar tokens.
 
 ### Frontend
 
-Copiar `Frontend/.env.local.example` a `Frontend/.env.local`:
+Copiar Frontend/.env.local.example a Frontend/.env.local:
 
 ```env
 VITE_API_URL=http://localhost:4000
 ```
 
-## Instalación
-
-Instala dependencias en cada carpeta por separado:
+## Instalacion
 
 ```bash
 cd Backend
@@ -92,7 +153,7 @@ cd ../Frontend
 npm install
 ```
 
-## Ejecución en desarrollo
+## Ejecucion en desarrollo
 
 ### Backend
 
@@ -101,8 +162,6 @@ cd Backend
 npm run dev
 ```
 
-El servidor se levanta en `http://localhost:4000` por defecto.
-
 ### Frontend
 
 ```bash
@@ -110,68 +169,23 @@ cd Frontend
 npm run dev
 ```
 
-La aplicación de Vite se levanta normalmente en `http://localhost:5173`.
+Por defecto:
 
-## Scripts disponibles
+- API: http://localhost:4000
+- Frontend: http://localhost:5173
 
-### Backend
-
-- `npm run dev`: ejecuta el servidor con nodemon.
-- `npm run build`: compila TypeScript.
-- `npm start`: ejecuta la versión compilada.
-
-### Frontend
-
-- `npm run dev`: inicia el entorno de desarrollo.
-- `npm run build`: genera la versión de producción.
-- `npm run preview`: previsualiza la build.
-- `npm run lint`: ejecuta ESLint.
-
-## Funcionalidades actuales
-
-### Frontend
-
-- Ruta de login en `/auth/login`.
-- Ruta de registro en `/auth/register`.
-- Formulario de registro con validaciones para nombre, email, handle, password y confirmación.
-- Mensajes visuales de error.
-- Notificaciones con `sonner`.
+## Scripts
 
 ### Backend
 
-- Conexión a MongoDB con Mongoose.
-- Registro de usuarios con validación de entrada.
-- Normalización del handle con `slug`.
-- Validación de email, password y campos obligatorios.
-- Login con verificación de contraseña usando `bcrypt`.
+- npm run dev
+- npm run dev:api
+- npm run build
+- npm start
 
-## Endpoints
+### Frontend
 
-### `POST /auth/register`
-
-Registra un usuario nuevo.
-
-Campos esperados:
-
-- `name`
-- `email`
-- `handle`
-- `password`
-- `password_confirmation` en el frontend, usado para validar antes de enviar
-
-### `POST /auth/login`
-
-Inicia sesión con:
-
-- `email`
-- `password`
-
-## Notas
-
-- Asegúrate de que el backend esté corriendo antes de abrir el frontend.
-- El frontend consume la API usando `VITE_API_URL`.
-- El backend acepta peticiones solo desde `FRONTEND_URL` por la configuración de CORS.
-
-## Estado del proyecto
-
-La base actual está enfocada en autenticación y es la base para un clon de Linktree. El siguiente paso natural es agregar persistencia de sesión, perfiles de usuario y la pantalla principal con enlaces del usuario.
+- npm run dev
+- npm run build
+- npm run preview
+- npm run lint
