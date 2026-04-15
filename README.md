@@ -195,4 +195,3 @@ Por defecto:
 - Alejandro Correa
 - Andres Alvarez
 
-Nota: los perfiles de GitHub son opcionales, pero se pueden agregar para facilitar contacto y portafolio.
