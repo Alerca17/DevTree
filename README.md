@@ -189,3 +189,10 @@ Por defecto:
 - npm run build
 - npm run preview
 - npm run lint
+
+## Autores
+
+- Alejandro Correa
+- Andres Alvarez
+
+Nota: los perfiles de GitHub son opcionales, pero se pueden agregar para facilitar contacto y portafolio.
