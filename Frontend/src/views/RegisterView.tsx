@@ -79,7 +79,7 @@ export default function RegisterView() {
         </div>
         <div className="grid grid-cols-1 space-y-3">
           <label htmlFor="handle" className="text-2xl text-slate-500">
-            Handle
+            Usuario
           </label>
           <input
             id="handle"
@@ -87,7 +87,7 @@ export default function RegisterView() {
             placeholder="Nombre de usuario: sin espacios"
             className="bg-slate-100 border-none p-3 rounded-lg placeholder-slate-400"
             {...register("handle", {
-              required: "El Handle es Obligatorio",
+              required: "El Usuario es Obligatorio",
             })}
           />
           {errors.handle && (
@@ -96,18 +96,18 @@ export default function RegisterView() {
         </div>
         <div className="grid grid-cols-1 space-y-3">
           <label htmlFor="password" className="text-2xl text-slate-500">
-            Password
+            Contraseña
           </label>
           <input
             id="password"
             type="password"
-            placeholder="Password de Registro"
+            placeholder="Contraseña de Registro"
             className="bg-slate-100 border-none p-3 rounded-lg placeholder-slate-400"
             {...register("password", {
-              required: "El Password es Obligatorio",
+              required: "La Contraseña es Obligatorio",
               minLength: {
                 value: 8,
-                message: "El Password debe tener al menos 8 caracteres",
+                message: "La Contraseña debe tener al menos 8 caracteres",
               },
             })}
           />
@@ -121,17 +121,17 @@ export default function RegisterView() {
             htmlFor="password_confirmation"
             className="text-2xl text-slate-500"
           >
-            Repetir Password
+            Repetir Contraseña
           </label>
           <input
             id="password_confirmation"
             type="password"
-            placeholder="Repetir Password"
+            placeholder="Repetir Contraseña"
             className="bg-slate-100 border-none p-3 rounded-lg placeholder-slate-400"
             {...register("password_confirmation", {
-              required: "La confirmación del Password es Obligatorio",
+              required: "La confirmación de la Contraseña es Obligatorio",
               validate: (value) =>
-                value === password || "Los Passwords no coinciden",
+                value === password || "Las Contraseñas no coinciden",
             })}
           />
           {errors.password_confirmation && (
