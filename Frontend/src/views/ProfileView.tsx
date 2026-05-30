@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../Components/ErrorMessage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUser, updateProfile } from "../api/DevtreeApi";
+import { getUser, updateProfile, uploadImage } from "../api/DevtreeApi";
 import { ProfileForm, User } from "../types";
 import { toast } from "sonner";
 
@@ -31,8 +31,41 @@ export default function ProfileView() {
 		},
 	});
 
+	const uploadImageMutation = useMutation({
+		mutationFn: uploadImage,
+		onError: (error) => {
+			toast.error(error.message);
+		},
+		onSuccess: (data) => {
+			queryClient.setQueryData(['user'], (prevData: User) => {
+				return {
+					...prevData,
+					image: data
+				}
+			})
+		},
+	});
+
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+		const file = e.target.files?.[0];
+
+		if (!file) {
+			toast.error("Debes seleccionar una imagen");
+			return;
+		}
+
+		if (!file.type.startsWith("image/")) {
+			toast.error("El archivo debe ser una imagen válida");
+			e.target.value = "";
+			return;
+		}
+
+		uploadImageMutation.mutate(file);
+	}
+
 	const handleUserProfileForm = (formdata: ProfileForm) => {
-		console.log(formdata);
 
 		updateProfileMutation.mutate(formdata);
 	};
@@ -45,13 +78,13 @@ export default function ProfileView() {
 				Editar Información
 			</legend>
 			<div className="grid grid-cols-1 gap-2">
-				<label htmlFor="handle">Handle:</label>
+				<label htmlFor="handle">Usuario:</label>
 				<input
 					type="text"
 					className="border-none bg-slate-100 rounded-lg p-2"
-					placeholder="handle o Nombre de Usuario"
+					placeholder="Nombre de Usuario"
 					{...register("handle", {
-						required: "El Handle es Obligatorio",
+						required: "El Usuario es Obligatorio",
 					})}
 				/>
 				{errors.handle && <ErrorMessage>{errors.handle.message}</ErrorMessage>}
@@ -79,7 +112,7 @@ export default function ProfileView() {
 					name="handle"
 					className="border-none bg-slate-100 rounded-lg p-2"
 					accept="image/*"
-					onChange={() => {}}
+					onChange={handleChange}
 				/>
 			</div>
 

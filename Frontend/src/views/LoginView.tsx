@@ -60,14 +60,14 @@ export default function LoginView() {
           )}
         </div>
         <div className="grid grid-cols-1 space-y-3">
-          <label htmlFor="password" className="text-2xl text-slate-500">Password</label>
+          <label htmlFor="password" className="text-2xl text-slate-500">Contraseña</label>
           <input
             id="password"
             type="password"
-            placeholder="Password de Registro"
+            placeholder="Contraseña de Registro"
             className="bg-slate-100 border-none p-3 rounded-lg placeholder-slate-400"
             {...register("password", {
-              required: "El Password es obligatorio",
+              required: "La Contraseña es obligatoria",
             })}
           />
           {errors.password && (
