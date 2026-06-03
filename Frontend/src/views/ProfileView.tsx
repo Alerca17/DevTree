@@ -37,18 +37,16 @@ export default function ProfileView() {
 			toast.error(error.message);
 		},
 		onSuccess: (data) => {
-			queryClient.setQueryData(['user'], (prevData: User) => {
+			queryClient.setQueryData(["user"], (prevData: User) => {
 				return {
 					...prevData,
-					image: data
-				}
-			})
+					image: data,
+				};
+			});
 		},
 	});
 
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
 		const file = e.target.files?.[0];
 
 		if (!file) {
@@ -63,11 +61,14 @@ export default function ProfileView() {
 		}
 
 		uploadImageMutation.mutate(file);
-	}
+	};
 
 	const handleUserProfileForm = (formdata: ProfileForm) => {
+		const user: User = queryClient.getQueryData(["user"])!;
+		user.description = formdata.description;
+		user.handle = formdata.handle;
 
-		updateProfileMutation.mutate(formdata);
+		updateProfileMutation.mutate(user);
 	};
 	return (
 		<form

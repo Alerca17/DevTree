@@ -1,13 +1,25 @@
 import { Link, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import NavigationTabs from "../Components/NavigationTabs";
-import { User } from "../types";
+import { SocialNetwork, User } from "../types";
+import { useEffect, useState } from "react";
+import DevTreeLink from "./DevTreeLink";
 
 type DevtreeProps = {
 	data: User;
 };
 
 export default function Devtree({ data }: DevtreeProps) {
+	const [enableLinks, setEnableLinks] = useState<SocialNetwork[]>(
+		JSON.parse(data.links).filter((item: SocialNetwork) => item.enabled),
+	);
+
+	useEffect(() => {
+		setEnableLinks(
+			JSON.parse(data.links).filter((item: SocialNetwork) => item.enabled),
+		);
+	}, [data]);
+
 	return (
 		<>
 			<header className="bg-slate-800 py-5">
@@ -18,7 +30,7 @@ export default function Devtree({ data }: DevtreeProps) {
 					<div className="md:w-1/3 md:flex md:justify-end">
 						<button
 							className=" bg-lime-500 p-2 text-slate-800 uppercase font-black text-xs rounded-lg cursor-pointer"
-							onClick={() => { }}
+							onClick={() => {}}
 						>
 							Cerrar Sesión
 						</button>
@@ -45,11 +57,23 @@ export default function Devtree({ data }: DevtreeProps) {
 							<Outlet />
 						</div>
 						<div className="w-full md:w-96 bg-slate-800 px-5 py-10 space-y-6">
-
 							<p className="text-4xl text-center text-white">{data.handle}</p>
-							{data.image && <img src={data.image} alt="Imagen de Perfil" className="mx-auto max-w-[250px]" />}
-							<p className="text-center text-lg font-black text-white">{data.description}</p>
-
+							{data.image && (
+								<img
+									src={data.image}
+									alt="Imagen de Perfil"
+									className="mx-auto max-w-[250px]"
+								/>
+							)}
+							<p className="text-center text-lg font-black text-white">
+								{data.description}
+							</p>
+							<p className="text-white "> Iconos de redes sociales </p>
+							<div className="mt-20 flex flex-col gap-5">
+								{enableLinks.map((link) => (
+									<DevTreeLink key={link.name} link={link} />
+								))}
+							</div>
 						</div>
 					</div>
 				</main>
