@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfile } from "../api/DevtreeApi";
 import { SocialNetwork, User } from "../types";
+
 export default function LinkTreeView() {
-	const [devTreelinks, setDevTreeLinks] = useState(social);
+	const [devTreeLinks, setDevTreeLinks] = useState(social);
 	const queryClient = useQueryClient();
-	const user: User = queryClient.getQueryData(["user"])!;
+	const user = queryClient.getQueryData<User>(["user"]);
 
 	const { mutate } = useMutation({
 		mutationFn: updateProfile,
@@ -22,32 +23,49 @@ export default function LinkTreeView() {
 	});
 
 	useEffect(() => {
-		const updatedData = devTreelinks.map((item) => {
-			const userLinks = JSON.parse(user.links).find(
+		if (!user) return;
+		let parsedUserLinks: SocialNetwork[] = [];
+		try {
+			parsedUserLinks = JSON.parse(user.links);
+		} catch (e) {
+			parsedUserLinks = [];
+		}
+
+		const updatedData = social.map((item) => {
+			const userLink = parsedUserLinks.find(
 				(link: SocialNetwork) => link.name === item.name,
 			);
-			if (userLinks) {
+			if (userLink) {
 				return {
 					...item,
-					url: userLinks.url,
-					enabled: userLinks.enabled,
+					url: userLink.url,
+					enabled: userLink.enabled,
 				};
 			}
 			return item;
 		});
 		setDevTreeLinks(updatedData);
-	}, []);
+	}, [user?.links]);
 
 	const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const updatedLinks = devTreelinks.map((link) =>
+		const updatedLinks = devTreeLinks.map((link) =>
 			link.name === e.target.name ? { ...link, url: e.target.value } : link,
 		);
 
 		setDevTreeLinks(updatedLinks);
 	};
 
+	const parsedLinks: SocialNetwork[] = (() => {
+		if (!user) return [];
+		try {
+			return JSON.parse(user.links) as SocialNetwork[];
+		} catch (e) {
+			return [];
+		}
+	})();
+
 	const handleEnableLink = (socialNetwork: string) => {
-		const updatedLinks = devTreelinks.map((link) => {
+		const updatedLinks = devTreeLinks.map((link) => {
 			if (link.name === socialNetwork) {
 				if (isValidUrl(link.url)) {
 					return { ...link, enabled: !link.enabled };
@@ -62,18 +80,63 @@ export default function LinkTreeView() {
 		});
 
 		setDevTreeLinks(updatedLinks);
-
+		let updatedItems: SocialNetwork[] = [];
+		const selectSocialNetwork = updatedLinks.find(
+			(link) => link.name === socialNetwork,
+		);
+		if (selectSocialNetwork?.enabled) {
+			const id = parsedLinks.filter((link) => link.id).length + 1;
+			if (parsedLinks.some((link) => link.name === socialNetwork)) {
+				updatedItems = parsedLinks.map((link) => {
+					if (link.name === socialNetwork) {
+						return {
+							...link,
+							enabled: true,
+							id,
+						};
+					} else {
+						return link;
+					}
+				});
+			} else {
+				const newItem = {
+					...selectSocialNetwork,
+					id,
+				};
+				updatedItems = [...parsedLinks, newItem];
+			}
+		} else {
+			const indexToUpdate = parsedLinks.findIndex(
+				(link) => link.name === socialNetwork,
+			);
+			updatedItems = parsedLinks.map((link) => {
+				if (link.name === socialNetwork) {
+					return {
+						...link,
+						id: 0,
+						enabled: false,
+					};
+				} else if (link.id > indexToUpdate) {
+					return {
+						...link,
+						id: link.id - 1,
+					};
+				} else {
+					return link;
+				}
+			});
+		}
 		queryClient.setQueryData(["user"], (prevData: User) => {
 			return {
 				...prevData,
-				links: JSON.stringify(updatedLinks),
+				links: JSON.stringify(updatedItems),
 			};
 		});
 	};
 	return (
 		<>
 			<div className="space-y-4">
-				{devTreelinks.map((item) => (
+				{devTreeLinks.map((item) => (
 					<DevTreeInput
 						key={item.name}
 						item={item}
@@ -83,14 +146,12 @@ export default function LinkTreeView() {
 				))}
 				<button
 					className="bg-cyan-400 p-2 text-lg w-full uppercase text-slate-600 rounded-lg font-bold"
-					onClick={() => mutate(user)}
+					onClick={() => user && mutate(user)}
+					disabled={!user}
 				>
 					Guardar Cambios
 				</button>
 			</div>
 		</>
 	);
-}
-function useEfect(arg0: () => void, arg1: never[]) {
-	throw new Error("Function not implemented.");
 }
