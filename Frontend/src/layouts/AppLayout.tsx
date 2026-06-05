@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getUser } from "../api/DevtreeApi";
 import { Navigate } from "react-router-dom";
 import Devtree from "../Components/Devtree";
+
 export default function AppLayout() {
 	const { data, isLoading, isError } = useQuery({
 		queryFn: getUser,
