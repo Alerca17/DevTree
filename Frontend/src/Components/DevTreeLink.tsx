@@ -3,11 +3,11 @@ import { CSS } from '@dnd-kit/utilities'
 import { SocialNetwork } from "../types"
 
 type DevTreeLinkProps = {
-    link: SocialNetwork
+  link: SocialNetwork
 }
 
-export default function DevTreeLink({link}: DevTreeLinkProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+export default function DevTreeLink({ link }: DevTreeLinkProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: link.id
   })
 
@@ -17,18 +17,18 @@ export default function DevTreeLink({link}: DevTreeLinkProps) {
   }
 
   return (
-    <li 
+    <li
       ref={setNodeRef}
       style={style}
-      className="bg-white px-5 py-2 flex items-center gap-5 rounded-lg"
+      className="flex items-center gap-4 rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white shadow-lg shadow-black/10"
       {...attributes}
       {...listeners}
     >
-        <div
-            className="w-12 h-12 bg-cover"
-            style={{ backgroundImage: `url('/social/icon_${link.name}.svg')` }}
-        ></div>
-        <p className="capitalize">Visita mi: <span className="font-bold">{link.name}</span></p>
+      <div
+        className="h-12 w-12 rounded-xl bg-cover bg-center ring-1 ring-white/10"
+        style={{ backgroundImage: `url('/social/icon_${link.name}.svg')` }}
+      ></div>
+      <p className="capitalize text-sm text-slate-200">Visita mi: <span className="font-bold text-white">{link.name}</span></p>
     </li>
   )
 }

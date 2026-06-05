@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
     // Comprobar el password
     const isPasswordCorrect = await checkPassword(password, user.password)
     if (!isPasswordCorrect) {
-        const error = new Error('Password Incorrecto')
+        const error = new Error('Contraseña Incorrecta')
         return res.status(401).json({ error: error.message })
     }
 
@@ -89,26 +89,48 @@ export const updateProfile = async (req: Request, res: Response) => {
 }
 
 export const uploadImage = async (req: Request, res: Response) => {
-    const form = formidable({ multiples: false })
+
+    const form = formidable({ multiples: false });
+
     try {
-        form.parse(req, (error, fields, files) => {
-            cloudinary.uploader.upload(files.file[0].filepath, { public_id: uuid() }, async function (error, result) {
-                if (error) {
-                    const error = new Error('Hubo un error al subir la imagen')
-                    return res.status(500).json({ error: error.message })
-                }
-                if (result) {
-                    req.user.image = result.secure_url
-                    await req.user.save()
-                    res.json({ image: result.secure_url })
-                }
-            })
-        })
+
+        form.parse(req, async (error, fields, files) => {
+
+            if (error) {
+                return res.status(400).json({ error: "No se pudo procesar el archivo" });
+            }
+
+            const file = Array.isArray(files.file) ? files.file[0] : files.file;
+
+            if (!file) {
+                return res.status(400).json({ error: "Debes subir una imagen" });
+            }
+
+            if (!file.mimetype?.startsWith("image/")) {
+                return res.status(400).json({ error: "El archivo debe ser una imagen válida" });
+            }
+
+            cloudinary.uploader.upload(file.filepath, { public_id: uuid() }, async function (error, result) {
+
+                    if (error) {
+                        const error = new Error("Error al subir la imagen");
+                        return res.status(500).json({ error: error.message });
+                    }
+
+                    if (result) {
+                        req.user.image = result.secure_url;
+                        await req.user.save();
+                        res.json({ image: result.secure_url });
+                    }
+                },
+            );
+        });
+
     } catch (e) {
-        const error = new Error('Hubo un error')
-        return res.status(500).json({ error: error.message })
+        const error = new Error("Hubo un error");
+        return res.status(500).json({ error: error.message });
     }
-}
+};
 
 export const getUserByHandle = async (req: Request, res: Response) => {
     try {

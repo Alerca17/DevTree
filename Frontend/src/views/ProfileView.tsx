@@ -57,17 +57,23 @@ export default function ProfileView() {
 
 	return (
 		<form
-			className="bg-white p-10 rounded-lg space-y-5"
+			className="space-y-6 rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.12)] sm:p-10"
 			onSubmit={handleSubmit(handleUserProfileForm)}
 		>
-			<legend className="text-2xl text-slate-800 text-center">Editar Información</legend>
+			<div className="space-y-2 border-b border-slate-100 pb-6">
+				<p className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-600">Perfil</p>
+				<legend className="text-3xl font-black text-slate-900">Editar Información</legend>
+				<p className="max-w-2xl text-sm text-slate-500">Ajusta tu Usuario, descripción e imagen de perfil con una presentación más limpia y profesional.</p>
+			</div>
+
 			<div className="grid grid-cols-1 gap-2">
 				<label
 					htmlFor="handle"
-				>Handle:</label>
+					className="text-sm font-bold uppercase tracking-wide text-slate-500"
+				>Usuario</label>
 				<input
 					type="text"
-					className="border-none bg-slate-100 rounded-lg p-2"
+					className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200"
 					placeholder="handle o Nombre de Usuario"
 					{...register('handle', {
 						required: "El Nombre de Usuario es obligatorio"
@@ -80,9 +86,10 @@ export default function ProfileView() {
 			<div className="grid grid-cols-1 gap-2">
 				<label
 					htmlFor="description"
-				>Descripción:</label>
+					className="text-sm font-bold uppercase tracking-wide text-slate-500"
+				>Descripción</label>
 				<textarea
-					className="border-none bg-slate-100 rounded-lg p-2"
+					className="min-h-40 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200"
 					placeholder="Tu Descripción"
 					{...register('description', {
 						required: "La Descripción es obligatoria"
@@ -95,12 +102,13 @@ export default function ProfileView() {
 			<div className="grid grid-cols-1 gap-2">
 				<label
 					htmlFor="image"
-				>Imagen:</label>
+					className="text-sm font-bold uppercase tracking-wide text-slate-500"
+				>Imagen</label>
 				<input
 					id="image"
 					type="file"
 					name="image"
-					className="border-none bg-slate-100 rounded-lg p-2"
+					className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:border-cyan-400 hover:bg-slate-50"
 					accept="image/*"
 					onChange={handleChange}
 				/>
@@ -108,7 +116,7 @@ export default function ProfileView() {
 
 			<input
 				type="submit"
-				className="bg-cyan-400 p-2 text-lg w-full uppercase text-slate-600 rounded-lg font-bold cursor-pointer"
+				className="w-full cursor-pointer rounded-2xl bg-gradient-to-r from-cyan-400 to-sky-500 px-4 py-3 text-lg font-black uppercase tracking-wide text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:brightness-110"
 				value='Guardar Cambios'
 			/>
 		</form>
