@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { isAxiosError } from "axios";
 import type { RegisterForm } from "../types";
@@ -7,38 +7,43 @@ import ErrorMessage from "../Components/ErrorMessage";
 import api from "../config/Axios";
 
 export default function RegisterView() {
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const initialValues: RegisterForm = {
     name: "",
     email: "",
-    handle: "",
+    handle: location?.state?.handle || '',
     password: "",
     password_confirmation: "",
   };
 
-  const {
-    register,
-    watch,
-    reset,
+  const { register, watch, reset, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues });
 
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ defaultValues: initialValues });
   const password = watch("password");
 
   const handleRegister = async (formData: RegisterForm) => {
+
     try {
+
       const { data } = await api.post(`/auth/register`, formData);
       toast.success(data);
       reset();
+      navigate('/auth/login');
+
     } catch (error) {
+
       if (isAxiosError(error) && error.response) {
         toast.error(error.response.data);
       }
     }
   };
+
   return (
     <>
       <h1 className="text-4xl text-white font-bold">Crear Cuenta</h1>
+
       <form
         onSubmit={handleSubmit(handleRegister)}
         className="bg-white px-5 py-20 rounded-lg space-y-10 mt-10"
