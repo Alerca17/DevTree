@@ -10,7 +10,7 @@ const router = Router()
 router.post('/auth/register',
     body('handle')
         .notEmpty()
-        .withMessage('El handle no puede ir vacio'),
+        .withMessage('El Nombre de Usuario no puede ir vacio'),
     body('name')
         .notEmpty()
         .withMessage('El Nombre no puede ir vacio'),
@@ -19,7 +19,7 @@ router.post('/auth/register',
         .withMessage('E-mail no válido'),
     body('password')
         .isLength({ min: 8 })
-        .withMessage('El Password es muy corto, mínimo 8 caracteres'),
+        .withMessage('La Contraseña es muy corta, mínimo 8 caracteres'),
     handleInputErrors,
     createAccount
 )
@@ -30,7 +30,7 @@ router.post('/auth/login',
         .withMessage('E-mail no válido'),
     body('password')
         .notEmpty()
-        .withMessage('El Password es obligatorio'),
+        .withMessage('La Contraseña es obligatoria'),
     handleInputErrors,
     login
 )
@@ -40,7 +40,7 @@ router.get('/user', authenticate, getUser)
 router.patch('/user',
     body('handle')
         .notEmpty()
-        .withMessage('El handle no puede ir vacio'),
+        .withMessage('El Nombre de Usuario no puede ir vacio'),
     handleInputErrors,
     authenticate,
     updateProfile
@@ -53,7 +53,7 @@ router.get('/:handle', getUserByHandle)
 router.post('/search',
     body('handle')
         .notEmpty()
-        .withMessage('El Usuario no puede ir vacio'),
+        .withMessage('El Nombre de Usuario no puede ir vacio'),
     handleInputErrors,
     searchByHandle
 )
